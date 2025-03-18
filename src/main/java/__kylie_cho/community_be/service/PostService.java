@@ -1,7 +1,10 @@
 package __kylie_cho.community_be.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import __kylie_cho.community_be.entity.Post;
+import __kylie_cho.community_be.repository.PostRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,14 +12,29 @@ import java.util.List;
 @Service
 public class PostService {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final PostRepository postRepository;
 
-    public List<String> getPosts() {
-        // 간단한 SQL 쿼리 실행
-        String sql = "SELECT post_title FROM Post";
-        List<String> posts = jdbcTemplate.queryForList(sql, String.class);
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
-        return posts.isEmpty() ? List.of("게시글 없어요") : posts;
+    // 게시글 목록 조회 (페이지네이션 지원)
+    public List<Post> getPosts(int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset / limit, limit);
+        return postRepository.findAll(pageable).getContent();
+    }
+
+    // 게시글 상세 조회
+    public Post getPostById(Long id) {
+        return postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+    }
+
+    // 게시글 수정
+    @Transactional
+    public void updatePost(Long id, String newTitle, String newContent) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+        post.setTitle(newTitle);
+        post.setContent(newContent);
+        postRepository.save(post);
     }
 }
