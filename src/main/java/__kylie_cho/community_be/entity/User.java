@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -21,14 +22,6 @@ public class User {
     @Column(nullable = false, length = 20)
     private String nickname;
 
-    private String profileImage = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fm.blog.naver.com%2Fgambasg%2F222132751279&psig=AOvVaw0chHekwVUVVVtatmZ20ZEX&ust=1742380007472000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLiF4Mm1k4wDFQAAAAAdAAAAABAE";
-
-    public void setNickname(String newNickname) {
-    }
-
-    public void setProfileImage(String newProfileImage) {
-    }
-
-    public void setPassword(String newPassword) {
-    }
+//    private String profileImage = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fm.blog.naver.com%2Fgambasg%2F222132751279&psig=AOvVaw0chHekwVUVVVtatmZ20ZEX&ust=1742380007472000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLiF4Mm1k4wDFQAAAAAdAAAAABAE";
+    private String profileImage;
 }
