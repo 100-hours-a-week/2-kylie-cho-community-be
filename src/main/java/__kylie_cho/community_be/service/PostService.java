@@ -8,7 +8,13 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -35,21 +41,31 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public Post updatePost(Long id, String newTitle, String newContent) {
+    public Post updatePost(Long id, String newTitle, String newContent, MultipartFile newImageFile) throws IOException {
         Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
-        System.out.println("Before update - Title: " + post.getTitle() + ", Content: " + post.getContent());
 
-        post.setTitle(newTitle);
-        post.setContent(newContent);
+        if (newTitle != null && !newTitle.isEmpty()) {
+            post.setTitle(newTitle);
+        }
+        if (newContent != null && !newContent.isEmpty()) {
+            post.setContent(newContent);
+        }
 
+        // 이미지 처리
+        if (newImageFile != null && !newImageFile.isEmpty()) {
+            String folderPath = "uploaded_images/";
+            Path path = Paths.get(folderPath + newImageFile.getOriginalFilename());
+            Files.createDirectories(path.getParent());
+            newImageFile.transferTo(path);
+            post.setImage(path.toString());
+        }
 
-        System.out.println("After update - Title: " + post.getTitle() + ", Content: " + post.getContent());
         return postRepository.save(post);
     }
 
     // 게시글 생성
     @Transactional
-    public Post createPost(String title, String content, Long userId, String image) {
+    public Post createPost(String title, String content, Long userId, MultipartFile imageFile) throws IOException {
         // 사용자가 존재하는지 확인
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not Found"));
 
@@ -58,11 +74,17 @@ public class PostService {
         post.setContent(content);
         post.setUser(user);
 
-        if (image == null || image.isEmpty()) {
-            post.setImage(null);
-        } else {
-            post.setImage(image);
+        // 이미지 파일 처리
+        String imageUrl = null;
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String folderPath = "uploaded_images/";
+            Path path = Paths.get(folderPath + imageFile.getOriginalFilename());
+            Files.createDirectories(path.getParent());
+            imageFile.transferTo(path);
+            imageUrl = path.toString();
         }
+
+        post.setImage(imageUrl);
 
         post.setCommentCount(0);
         post.setHeartCount(0);
@@ -74,6 +96,24 @@ public class PostService {
     // 게시글 삭제
     @Transactional
     public void deletePost(Long id) {
+        // 게시글 조회
+        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // 이미지 파일 삭제
+        String postImage = post.getImage();
+        if (postImage != null && !postImage.isEmpty()) {
+            Path imagePath = Paths.get(postImage);
+            File imageFile = imagePath.toFile();
+
+            // 저장소에 파일이 존재하면 삭제
+            if (imageFile.exists()) {
+                boolean isDeleted = imageFile.delete();
+                if (!isDeleted) {
+                    throw new RuntimeException("게시글 이미지 삭제에 실패했어요.");
+                }
+            }
+        }
+
         postRepository.deleteById(id);
     }
 }

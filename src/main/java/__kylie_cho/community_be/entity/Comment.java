@@ -2,11 +2,13 @@ package __kylie_cho.community_be.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment {
@@ -22,10 +24,6 @@ public class Comment {
     @ManyToOne
     @JoinColumn(nullable = false)
     private Post post;
-
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private User postUser;
 
     @Lob
     @Column(nullable = false)

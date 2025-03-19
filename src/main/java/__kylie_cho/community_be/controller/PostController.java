@@ -4,7 +4,9 @@ import __kylie_cho.community_be.entity.Post;
 import __kylie_cho.community_be.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -33,15 +35,27 @@ public class PostController {
 
     // 게시글 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post) {
-        Post updatedPost = postService.updatePost(id, post.getTitle(), post.getContent());
+    public ResponseEntity<Post> updatePost(
+            @PathVariable Long id,
+            @RequestParam(required = false) String newTitle,
+            @RequestParam(required = false) String newContent,
+            @RequestParam(required = false) MultipartFile newImageFile
+            ) throws IOException {
+
+        Post updatedPost = postService.updatePost(id, newTitle, newContent, newImageFile);
         return ResponseEntity.ok(updatedPost);
     }
 
     // 게시글 생성
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post postRequest) {
-        Post createdPost = postService.createPost(postRequest.getTitle(), postRequest.getContent(), postRequest.getUser().getId(), postRequest.getImage());
+    public ResponseEntity<Post> createPost(
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam Long userId,
+            @RequestParam(required = false) MultipartFile image
+            ) throws IOException {
+
+        Post createdPost = postService.createPost(title, content, userId, image);
 
         return ResponseEntity.status(201).body(createdPost);
     }

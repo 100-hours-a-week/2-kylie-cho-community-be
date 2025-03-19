@@ -1,11 +1,13 @@
 package __kylie_cho.community_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -18,8 +20,15 @@ public class Post {
     private Long id;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Heart> hearts;
 
     @Column(nullable = false, length = 30)
     private String title;
