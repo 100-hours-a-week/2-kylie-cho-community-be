@@ -2,11 +2,13 @@ package __kylie_cho.community_be.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Post {
@@ -49,11 +51,5 @@ public class Post {
     @PreUpdate
     public void onUpdate() {
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public void setTitle(String newTitle) {
-    }
-
-    public void setContent(String newContent) {
     }
 }
