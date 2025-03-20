@@ -5,7 +5,6 @@ import __kylie_cho.community_be.entity.Post;
 import __kylie_cho.community_be.entity.User;
 import __kylie_cho.community_be.repository.CommentRepository;
 import __kylie_cho.community_be.repository.PostRepository;
-import __kylie_cho.community_be.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +15,10 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
 
-    public CommentService(CommentRepository commentRepository, PostRepository postRepository, UserRepository userRepository) {
+    public CommentService(CommentRepository commentRepository, PostRepository postRepository) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
-        this.userRepository = userRepository;
     }
 
     // 특정 게시글에 대한 댓글 조회
