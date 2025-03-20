@@ -2,7 +2,6 @@ package __kylie_cho.community_be.service;
 
 import __kylie_cho.community_be.entity.Post;
 import __kylie_cho.community_be.entity.User;
-import __kylie_cho.community_be.repository.CommentRepository;
 import __kylie_cho.community_be.repository.PostRepository;
 import __kylie_cho.community_be.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -24,7 +23,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository, CommentRepository commentRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
     }
@@ -93,7 +92,7 @@ public class PostService {
         post.setImage(imageUrl);
 
         post.setCommentCount(0);
-//        post.setHeartCount(0);
+        post.setHeartCount(0);
         post.setViewCount(0);
 
         return postRepository.save(post);

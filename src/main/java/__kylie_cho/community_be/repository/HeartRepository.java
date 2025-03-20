@@ -11,8 +11,6 @@ import java.util.Optional;
 @Repository
 public interface HeartRepository extends JpaRepository<Heart, Long> {
 
-//    boolean existsByUserIdAndPostId(Long userId, Long postId);
-
     Optional<Heart> findByUserAndPost(User user, Post post);
 
     long countByPost(Post post);

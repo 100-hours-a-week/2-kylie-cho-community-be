@@ -42,6 +42,10 @@ public class HeartService {
         heart.setUser(user);
         heart.setPost(post);
 
+        // 좋아요수 증가
+        post.incrementHeartCount();
+        postRepository.save(post);
+
         return heartRepository.save(heart);
     }
 
@@ -57,6 +61,10 @@ public class HeartService {
                         .orElseThrow(() -> new IllegalArgumentException("이 게시글에 좋아요를 누르지 않았어요."));
 
         heartRepository.delete(heart);
+
+        // 좋아요수 감소
+        post.decrementHeartCount();
+        postRepository.save(post);
     }
 
     // 특정 게시글에 대한 좋아요 수 조회

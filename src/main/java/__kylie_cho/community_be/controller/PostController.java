@@ -2,6 +2,7 @@ package __kylie_cho.community_be.controller;
 
 import __kylie_cho.community_be.entity.Post;
 import __kylie_cho.community_be.service.CommentService;
+import __kylie_cho.community_be.service.HeartService;
 import __kylie_cho.community_be.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +17,12 @@ public class PostController {
 
     private final PostService postService;
     private final CommentService commentService;
+    private final HeartService heartService;
 
-    public PostController(PostService postService, CommentService commentService) {
+    public PostController(PostService postService, CommentService commentService, HeartService heartService) {
         this.postService = postService;
         this.commentService = commentService;
+        this.heartService = heartService;
     }
 
     // 게시글 목록 조회
@@ -38,11 +41,15 @@ public class PostController {
         // 댓글수 조회
         long commentCount = commentService.getCommentCount(id);
 
+        // 좋아요수 조회
+        long heartCount = heartService.countHearts(id);
+
         Post post = postService.getPostById(id);
 
         return ResponseEntity.ok()
                 .header("viewCount", String.valueOf(viewCount))
                 .header("commentCount", String.valueOf(commentCount))
+                .header("heartCount", String.valueOf(heartCount))
                 .body(post);
     }
 
