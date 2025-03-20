@@ -41,8 +41,13 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public Post updatePost(Long id, String newTitle, String newContent, MultipartFile newImageFile) throws IOException {
-        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+    public Post updatePost(Long id, String newTitle, String newContent, MultipartFile newImageFile, Long userId) throws IOException {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (!post.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("작성자만 게시글을 수정할 수 있어요.");
+        }
 
         if (newTitle != null && !newTitle.isEmpty()) {
             post.setTitle(newTitle);
@@ -67,7 +72,7 @@ public class PostService {
     @Transactional
     public Post createPost(String title, String content, Long userId, MultipartFile imageFile) throws IOException {
         // 사용자가 존재하는지 확인
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not Found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not Found"));
 
         Post post = new Post();
         post.setTitle(title);
@@ -95,9 +100,14 @@ public class PostService {
 
     // 게시글 삭제
     @Transactional
-    public void deletePost(Long id) {
+    public void deletePost(Long id, Long userId) {
         // 게시글 조회
-        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (!post.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("작성자만 게시글을 삭제할 수 있어요.");
+        }
 
         // 이미지 파일 삭제
         String postImage = post.getImage();

@@ -19,8 +19,12 @@ public class User {
     private Long id;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference("user-posts")
     private List<Post> posts;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference("user-comments")
+    private List<Comment> comments;
 
     @Column(nullable = false, length = 100)
     private String email;

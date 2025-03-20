@@ -39,10 +39,11 @@ public class PostController {
             @PathVariable Long id,
             @RequestParam(required = false) String newTitle,
             @RequestParam(required = false) String newContent,
-            @RequestParam(required = false) MultipartFile newImageFile
+            @RequestParam(required = false) MultipartFile newImageFile,
+            @RequestParam Long userId
             ) throws IOException {
 
-        Post updatedPost = postService.updatePost(id, newTitle, newContent, newImageFile);
+        Post updatedPost = postService.updatePost(id, newTitle, newContent, newImageFile, userId);
         return ResponseEntity.ok(updatedPost);
     }
 
@@ -62,8 +63,8 @@ public class PostController {
 
     // 게시글 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
-        postService.deletePost(id);
+    public ResponseEntity<Void> deletePost(@PathVariable Long id, @RequestParam Long userId) {
+        postService.deletePost(id, userId);
         return ResponseEntity.noContent().build();
     }
 }
