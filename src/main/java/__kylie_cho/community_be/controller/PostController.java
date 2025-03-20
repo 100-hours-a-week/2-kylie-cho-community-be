@@ -37,13 +37,13 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<Post> updatePost(
             @PathVariable Long id,
-            @RequestParam(required = false) String newTitle,
-            @RequestParam(required = false) String newContent,
-            @RequestParam(required = false) MultipartFile newImageFile,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String content,
+            @RequestParam(required = false) MultipartFile imageFile,
             @RequestParam Long userId
             ) throws IOException {
 
-        Post updatedPost = postService.updatePost(id, newTitle, newContent, newImageFile, userId);
+        Post updatedPost = postService.updatePost(id, title, content, imageFile, userId);
         return ResponseEntity.ok(updatedPost);
     }
 
@@ -53,10 +53,10 @@ public class PostController {
             @RequestParam String title,
             @RequestParam String content,
             @RequestParam Long userId,
-            @RequestParam(required = false) MultipartFile image
+            @RequestParam(required = false) MultipartFile imageFile
             ) throws IOException {
 
-        Post createdPost = postService.createPost(title, content, userId, image);
+        Post createdPost = postService.createPost(title, content, userId, imageFile);
 
         return ResponseEntity.status(201).body(createdPost);
     }

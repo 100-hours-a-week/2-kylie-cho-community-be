@@ -36,10 +36,10 @@ public class CommentController {
     // 댓글 수정
     @PutMapping("/{id}")
     public ResponseEntity<Comment> updateComment(@PathVariable Long id,
-                                                 @RequestParam String newContent,
+                                                 @RequestParam String content,
                                                  @RequestParam Long userId) {
 
-        Comment updatedComment = commentService.updateComment(id, newContent, userId);
+        Comment updatedComment = commentService.updateComment(id, content, userId);
         return ResponseEntity.ok(updatedComment);
     }
 

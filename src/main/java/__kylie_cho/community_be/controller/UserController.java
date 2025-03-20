@@ -41,10 +41,10 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<User> updatedUser(
             @PathVariable Long id,
-            @RequestParam(required = false) String newNickname,
-            @RequestParam(required = false) MultipartFile newProfileImage) throws IOException {
+            @RequestParam(required = false) String nickname,
+            @RequestParam(required = false) MultipartFile profileImage) throws IOException {
 
-        User updatedUser = userService.updateUser(id, newNickname, newProfileImage);
+        User updatedUser = userService.updateUser(id, nickname, profileImage);
 
         return ResponseEntity.ok(updatedUser);      // 200 OK
     }
