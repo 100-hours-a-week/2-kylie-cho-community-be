@@ -47,13 +47,4 @@ public class Comment {
     public void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-//    public void setPost(Post post) {
-//    }
-//
-//    public void setUser(User user) {
-//    }
-//
-//    public void setContent(String content) {
-//    }
 }

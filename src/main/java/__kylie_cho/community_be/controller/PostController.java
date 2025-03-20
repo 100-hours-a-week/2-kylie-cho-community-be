@@ -1,6 +1,7 @@
 package __kylie_cho.community_be.controller;
 
 import __kylie_cho.community_be.entity.Post;
+import __kylie_cho.community_be.service.CommentService;
 import __kylie_cho.community_be.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +15,11 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
 
-    public PostController(PostService postService) {
+    public PostController(PostService postService, CommentService commentService) {
         this.postService = postService;
+        this.commentService = commentService;
     }
 
     // 게시글 목록 조회
@@ -29,8 +32,18 @@ public class PostController {
     // 게시글 상세 조회
     @GetMapping("/{id}")
     public ResponseEntity<Post> getPostById(@PathVariable Long id) {
+        // 조회수 증가
+        long viewCount = postService.incrementViewCount(id);
+
+        // 댓글수 조회
+        long commentCount = commentService.getCommentCount(id);
+
         Post post = postService.getPostById(id);
-        return ResponseEntity.ok(post);
+
+        return ResponseEntity.ok()
+                .header("viewCount", String.valueOf(viewCount))
+                .header("commentCount", String.valueOf(commentCount))
+                .body(post);
     }
 
     // 게시글 수정

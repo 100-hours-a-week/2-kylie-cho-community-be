@@ -21,6 +21,11 @@ public class CommentService {
         this.postRepository = postRepository;
     }
 
+    // 특정 게시글에 대한 댓글수 조회
+    public long getCommentCount(Long postId) {
+        return commentRepository.countByPostId(postId);
+    }
+
     // 특정 게시글에 대한 댓글 조회
     public List<Comment> getCommentsByPost(Long postId) {
         Post post = postRepository.findById(postId)
@@ -42,6 +47,10 @@ public class CommentService {
         comment.setUser(user);
         comment.setContent(content);
 
+        // 댓글수 업데이트
+        post.incrementCommentCount();
+        postRepository.save(post);
+
         return commentRepository.save(comment);
     }
 
@@ -61,13 +70,21 @@ public class CommentService {
 
     // 댓글 삭제
     @Transactional
-    public void deleteComment(Long id, Long userId) {
+    public void deleteComment(Long id, Long userId, Long postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
+
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found. ID: " + id));
 
         if (!comment.getUser().getId().equals(userId)) {
             throw new IllegalArgumentException("작성자만 댓글을 삭제할 수 있어요.");
         }
+
+        // 댓글수 업데이트
+        post.decrementCommentCount();
+        postRepository.save(post);
 
         commentRepository.deleteById(id);
     }

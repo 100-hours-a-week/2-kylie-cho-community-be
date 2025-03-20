@@ -40,11 +40,11 @@ public class Post {
     private String content;
 
     @Column(nullable = false)
-    private int heartCount = 0;
+    private int heartCount;
     @Column(nullable = false)
-    private int viewCount = 0;
+    private int viewCount;
     @Column(nullable = false)
-    private int commentCount = 0;
+    private int commentCount;
 
     @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
@@ -63,5 +63,28 @@ public class Post {
     @PreUpdate
     public void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    // 조회수 업데이트 메소드
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
+
+    // 좋아요 수 업데이트 메소드
+    public void incrementHeartCount() {
+        this.heartCount++;
+    }
+
+    public void decrementHeartCount() {
+        this.heartCount--;
+    }
+
+    // 댓글 수 업데이트 메소드
+    public void incrementCommentCount() {
+        this.commentCount++;
+    }
+
+    public void decrementCommentCount() {
+        this.commentCount--;
     }
 }

@@ -2,6 +2,7 @@ package __kylie_cho.community_be.service;
 
 import __kylie_cho.community_be.entity.Post;
 import __kylie_cho.community_be.entity.User;
+import __kylie_cho.community_be.repository.CommentRepository;
 import __kylie_cho.community_be.repository.PostRepository;
 import __kylie_cho.community_be.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -23,7 +24,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository, CommentRepository commentRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
     }
@@ -92,7 +93,7 @@ public class PostService {
         post.setImage(imageUrl);
 
         post.setCommentCount(0);
-        post.setHeartCount(0);
+//        post.setHeartCount(0);
         post.setViewCount(0);
 
         return postRepository.save(post);
@@ -125,5 +126,17 @@ public class PostService {
         }
 
         postRepository.deleteById(id);
+    }
+
+    // 조회수 증가 및 반환
+    @Transactional
+    public long incrementViewCount(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
+
+        post.increaseViewCount();
+        postRepository.save(post);
+
+        return post.getViewCount();
     }
 }
