@@ -15,30 +15,17 @@ public class PostResponseDto {
     private String createdAt;
     private String updatedAt;
     private String image;
-    private AuthorDto author;
+    private UserSummaryDto user;
 
-    public PostResponseDto(Post post) {
+    public PostResponseDto(Post post, long viewCount, long commentCount, long heartCount) {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.heartCount = post.getHearts().size();
-        this.viewCount = post.getViewCount();
-        this.commentCount = post.getComments().size();
+        this.heartCount = (int) heartCount;
+        this.viewCount = (int) viewCount;
+        this.commentCount = (int) commentCount;
         this.createdAt = post.getCreatedAt().toString();
         this.updatedAt = post.getUpdatedAt().toString();
-        this.image = post.getImage();
-        this.author = new AuthorDto(post.getUser());
+        this.user = (post.getUser() != null) ? new UserSummaryDto(post.getUser()) : null;
     }
-
-    @Getter
-    public static class AuthorDto {
-        private String nickname;
-        private String profileImage;
-
-        public AuthorDto(User user) {
-            this.nickname = user.getNickname();
-            this.profileImage = user.getProfileImage();
-        }
-    }
-
 }

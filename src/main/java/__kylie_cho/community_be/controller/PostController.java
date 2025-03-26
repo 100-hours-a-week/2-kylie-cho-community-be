@@ -32,12 +32,20 @@ public class PostController {
     public List<PostResponseDto> getPosts(@RequestParam(defaultValue = "0") Integer offset,
                                           @RequestParam(defaultValue = "10") Integer limit) {
         List<Post> posts = postService.getPosts(offset, limit);
-        return posts.stream().map(PostResponseDto::new).collect(Collectors.toList());
+
+        return posts.stream()
+                .map(post -> {
+                    long viewCount = post.getViewCount();
+                    long commentCount = commentService.getCommentCount(post.getId());
+                    long heartCount = heartService.countHearts(post.getId());
+                    return new PostResponseDto(post, viewCount, commentCount, heartCount);
+                })
+                .collect(Collectors.toList());
     }
 
     // 게시글 상세 조회
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable Long id) {
+    public ResponseEntity<PostResponseDto> getPostById(@PathVariable Long id) {
         // 조회수 증가
         long viewCount = postService.incrementViewCount(id);
 
@@ -48,12 +56,9 @@ public class PostController {
         long heartCount = heartService.countHearts(id);
 
         Post post = postService.getPostById(id);
+        PostResponseDto responseDto = new PostResponseDto(post, viewCount, commentCount, heartCount);
 
-        return ResponseEntity.ok()
-                .header("viewCount", String.valueOf(viewCount))
-                .header("commentCount", String.valueOf(commentCount))
-                .header("heartCount", String.valueOf(heartCount))
-                .body(post);
+        return ResponseEntity.ok(responseDto);
     }
 
     // 게시글 수정
