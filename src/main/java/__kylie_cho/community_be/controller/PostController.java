@@ -31,61 +31,38 @@ public class PostController {
     @GetMapping
     public List<PostResponseDto> getPosts(@RequestParam(defaultValue = "0") Integer offset,
                                           @RequestParam(defaultValue = "10") Integer limit) {
-        List<Post> posts = postService.getPosts(offset, limit);
-
-        return posts.stream()
-                .map(post -> {
-                    long viewCount = post.getViewCount();
-                    long commentCount = commentService.getCommentCount(post.getId());
-                    long heartCount = heartService.countHearts(post.getId());
-                    return new PostResponseDto(post, viewCount, commentCount, heartCount);
-                })
-                .collect(Collectors.toList());
+        return postService.getPosts(offset, limit);
     }
 
     // 게시글 상세 조회
     @GetMapping("/{id}")
     public ResponseEntity<PostResponseDto> getPostById(@PathVariable Long id) {
-        // 조회수 증가
-        long viewCount = postService.incrementViewCount(id);
-
-        // 댓글수 조회
-        long commentCount = commentService.getCommentCount(id);
-
-        // 좋아요수 조회
-        long heartCount = heartService.countHearts(id);
-
-        Post post = postService.getPostById(id);
-        PostResponseDto responseDto = new PostResponseDto(post, viewCount, commentCount, heartCount);
-
+        PostResponseDto responseDto = postService.getPostById(id);
         return ResponseEntity.ok(responseDto);
     }
 
     // 게시글 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(
+    public ResponseEntity<PostResponseDto> updatePost(
             @PathVariable Long id,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String content,
             @RequestParam(required = false) MultipartFile imageFile,
             @RequestParam Long userId
             ) throws IOException {
-
-        Post updatedPost = postService.updatePost(id, title, content, imageFile, userId);
+        PostResponseDto updatedPost = postService.updatePost(id, title, content, imageFile, userId);
         return ResponseEntity.ok(updatedPost);
     }
 
     // 게시글 생성
     @PostMapping
-    public ResponseEntity<Post> createPost(
+    public ResponseEntity<PostResponseDto> createPost(
             @RequestParam String title,
             @RequestParam String content,
             @RequestParam Long userId,
             @RequestParam(required = false) MultipartFile imageFile
             ) throws IOException {
-
-        Post createdPost = postService.createPost(title, content, userId, imageFile);
-
+        PostResponseDto createdPost = postService.createPost(title, content, userId, imageFile);
         return ResponseEntity.status(201).body(createdPost);
     }
 

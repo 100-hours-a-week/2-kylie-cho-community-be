@@ -1,5 +1,6 @@
 package __kylie_cho.community_be.service;
 
+import __kylie_cho.community_be.dto.PostResponseDto;
 import __kylie_cho.community_be.entity.Post;
 import __kylie_cho.community_be.entity.User;
 import __kylie_cho.community_be.repository.PostRepository;
@@ -7,6 +8,7 @@ import __kylie_cho.community_be.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,19 +31,29 @@ public class PostService {
     }
 
     // 게시글 목록 조회 (페이지네이션 지원)
-    public List<Post> getPosts(int offset, int limit) {
-        Pageable pageable = PageRequest.of(offset / limit, limit);
-        return postRepository.findAll(pageable).getContent();
+    public List<PostResponseDto> getPosts(int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset / limit, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return postRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .stream()
+                .map(post -> new PostResponseDto(post, post.getViewCount(), post.getCommentCount(), post.getHeartCount()))
+                .toList();
     }
 
     // 게시글 상세 조회
-    public Post getPostById(Long id) {
-        return postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+    public PostResponseDto getPostById(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // 조회수 증가
+        post.increaseViewCount();
+        postRepository.save(post);
+
+        return new PostResponseDto(post, post.getViewCount(), post.getCommentCount(), post.getHeartCount());
     }
 
     // 게시글 수정
     @Transactional
-    public Post updatePost(Long id, String newTitle, String newContent, MultipartFile newImageFile, Long userId) throws IOException {
+    public PostResponseDto updatePost(Long id, String newTitle, String newContent, MultipartFile newImageFile, Long userId) throws IOException {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -65,12 +77,13 @@ public class PostService {
             post.setImage(path.toString());
         }
 
-        return postRepository.save(post);
+        Post updatedPost = postRepository.save(post);
+        return new PostResponseDto(updatedPost, updatedPost.getViewCount(), updatedPost.getCommentCount(), updatedPost.getHeartCount());
     }
 
     // 게시글 생성
     @Transactional
-    public Post createPost(String title, String content, Long userId, MultipartFile imageFile) throws IOException {
+    public PostResponseDto createPost(String title, String content, Long userId, MultipartFile imageFile) throws IOException {
         // 사용자가 존재하는지 확인
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not Found"));
 
@@ -95,7 +108,8 @@ public class PostService {
         post.setHeartCount(0);
         post.setViewCount(0);
 
-        return postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+        return new PostResponseDto(savedPost, 0, 0, 0);
     }
 
     // 게시글 삭제
