@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/hearts")
+@RequestMapping("/api/hearts")
 public class HeartController {
 
     private final HeartService heartService;

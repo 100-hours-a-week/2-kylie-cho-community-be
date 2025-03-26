@@ -1,5 +1,7 @@
 package __kylie_cho.community_be.controller;
 
+import __kylie_cho.community_be.dto.UserLoginRequestDto;
+import __kylie_cho.community_be.dto.UserRegisterRequestDto;
 import __kylie_cho.community_be.entity.User;
 import __kylie_cho.community_be.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -10,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -20,20 +22,36 @@ public class UserController {
     // 회원가입
     @PostMapping("/register")
     public ResponseEntity<User> register(
-            @RequestParam String email,
-            @RequestParam String nickname,
-            @RequestParam String password,
-            @RequestParam MultipartFile profileImage) throws IOException {
+            @ModelAttribute UserRegisterRequestDto requestDto) throws IOException {
 
-        User newUser = userService.registerUser(email, nickname, password, profileImage);
+        System.out.println("회원가입 요청 받음:");
+        System.out.println("Email: " + requestDto.getEmail());
+
+        MultipartFile profileImage = requestDto.getProfileImage();
+        if (profileImage == null || profileImage.isEmpty()) {
+            System.out.println("⚠️ 프로필 이미지 없음 (기본 이미지 사용)");
+        } else {
+            System.out.println("📸 프로필 이미지 수신: " + profileImage.getOriginalFilename());
+        }
+
+        User newUser = userService.registerUser(
+                requestDto.getEmail(),
+                requestDto.getNickname(),
+                requestDto.getPassword(),
+                requestDto.getProfileImage()
+        );
 
         return ResponseEntity.status(201).body(newUser);
     }
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestParam String email, @RequestParam String password) {
-        User user = userService.loginUser(email, password);
+    public ResponseEntity<User> login(@RequestBody UserLoginRequestDto requestDto) {
+        System.out.println("로그인 요청 받음 (email) : " + requestDto.getEmail());
+        User user = userService.loginUser(requestDto.getEmail(), requestDto.getPassword());
+
+        System.out.println("🔍 프로필 이미지 URL: " + user.getProfileImage());
+
         return ResponseEntity.ok(user);
     }
 

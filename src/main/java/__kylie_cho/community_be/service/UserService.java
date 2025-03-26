@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -30,15 +31,19 @@ public class UserService {
         }
 
         // 프로필 이미지 처리
-        String imageUrl = null;
+        String imageUrl;
         if (profileImage != null && !profileImage.isEmpty()) {
             String folderPath = "uploaded_images/";
-            Path path = Paths.get(folderPath + profileImage.getOriginalFilename());
+            String fileName = UUID.randomUUID().toString() + "_" + profileImage.getOriginalFilename();
+            Path path = Paths.get(folderPath + fileName);
             Files.createDirectories(path.getParent());
             profileImage.transferTo(path);
-            imageUrl = path.toString();
+
+            imageUrl = "/uploaded_images/" + fileName;
+            System.out.println("📸 프로필 이미지 저장됨: " + imageUrl);
         } else {
             imageUrl = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fm.blog.naver.com%2Fgambasg%2F222132751279&psig=AOvVaw0chHekwVUVVVtatmZ20ZEX&ust=1742380007472000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLiF4Mm1k4wDFQAAAAAdAAAAABAE";
+            System.out.println("⚠️ 프로필 이미지 없음, 기본 이미지 사용");
         }
 
         User user = new User();
