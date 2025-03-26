@@ -42,7 +42,7 @@ public class UserService {
             imageUrl = "/uploaded_images/" + fileName;
             System.out.println("📸 프로필 이미지 저장됨: " + imageUrl);
         } else {
-            imageUrl = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fm.blog.naver.com%2Fgambasg%2F222132751279&psig=AOvVaw0chHekwVUVVVtatmZ20ZEX&ust=1742380007472000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLiF4Mm1k4wDFQAAAAAdAAAAABAE";
+            imageUrl = "https://blog.kakaocdn.net/dn/bCXLP7/btrQuNirLbt/N30EKpk07InXpbReKWzde1/img.png";
             System.out.println("⚠️ 프로필 이미지 없음, 기본 이미지 사용");
         }
 

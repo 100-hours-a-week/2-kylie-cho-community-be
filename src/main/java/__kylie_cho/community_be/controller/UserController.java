@@ -1,5 +1,6 @@
 package __kylie_cho.community_be.controller;
 
+import __kylie_cho.community_be.dto.UserChangePwRequest;
 import __kylie_cho.community_be.dto.UserLoginRequestDto;
 import __kylie_cho.community_be.dto.UserRegisterRequestDto;
 import __kylie_cho.community_be.entity.User;
@@ -76,8 +77,8 @@ public class UserController {
 
     // 비밀번호 수정
     @PutMapping("/{id}/change-password")
-    public ResponseEntity<User> changePassword(@PathVariable Long id, @RequestParam String oldPassword, @RequestParam String newPassword) {
-        User updatedUser = userService.updatePassword(id, oldPassword, newPassword);
+    public ResponseEntity<User> changePassword(@PathVariable Long id, @RequestBody UserChangePwRequest request) {
+        User updatedUser = userService.updatePassword(id, request.getOldPassword(), request.getNewPassword());
         return ResponseEntity.ok(updatedUser);      // 200 OK
     }
 
