@@ -1,5 +1,6 @@
 package __kylie_cho.community_be.controller;
 
+import __kylie_cho.community_be.dto.PostResponseDto;
 import __kylie_cho.community_be.entity.Post;
 import __kylie_cho.community_be.service.CommentService;
 import __kylie_cho.community_be.service.HeartService;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -27,9 +29,10 @@ public class PostController {
 
     // 게시글 목록 조회
     @GetMapping
-    public List<Post> getPosts(@RequestParam(defaultValue = "0") Integer offset,
-                               @RequestParam(defaultValue = "10") Integer limit) {
-        return postService.getPosts(offset, limit);
+    public List<PostResponseDto> getPosts(@RequestParam(defaultValue = "0") Integer offset,
+                                          @RequestParam(defaultValue = "10") Integer limit) {
+        List<Post> posts = postService.getPosts(offset, limit);
+        return posts.stream().map(PostResponseDto::new).collect(Collectors.toList());
     }
 
     // 게시글 상세 조회
