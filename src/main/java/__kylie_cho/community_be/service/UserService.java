@@ -1,5 +1,8 @@
 package __kylie_cho.community_be.service;
 
+import __kylie_cho.community_be.dto.UserChangePwRequestDto;
+import __kylie_cho.community_be.dto.UserLoginRequestDto;
+import __kylie_cho.community_be.dto.UserRegisterRequestDto;
 import __kylie_cho.community_be.entity.User;
 import __kylie_cho.community_be.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -12,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
-
 @Service
 public class UserService {
 
@@ -24,20 +26,20 @@ public class UserService {
 
     // 회원가입
     @Transactional
-    public User registerUser(String email, String nickname, String password, MultipartFile profileImage) throws IOException {
+    public User registerUser(UserRegisterRequestDto dto) throws IOException {
         // 이메일 중복 체크
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
 
         // 프로필 이미지 처리
         String imageUrl;
-        if (profileImage != null && !profileImage.isEmpty()) {
+        if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
             String folderPath = "uploaded_images/";
-            String fileName = UUID.randomUUID().toString() + "_" + profileImage.getOriginalFilename();
+            String fileName = UUID.randomUUID().toString() + "_" + dto.getProfileImage().getOriginalFilename();
             Path path = Paths.get(folderPath + fileName);
             Files.createDirectories(path.getParent());
-            profileImage.transferTo(path);
+            dto.getProfileImage().transferTo(path);
 
             imageUrl = "/uploaded_images/" + fileName;
             System.out.println("📸 프로필 이미지 저장됨: " + imageUrl);
@@ -47,18 +49,19 @@ public class UserService {
         }
 
         User user = new User();
-        user.setEmail(email);
-        user.setNickname(nickname);
-        user.setPassword(password);
+        user.setEmail(dto.getEmail());
+        user.setNickname(dto.getNickname());
+        user.setPassword(dto.getPassword());
         user.setProfileImage(imageUrl);
 
         return userRepository.save(user);
     }
 
     // 로그인
-    public User loginUser(String email, String password) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-        if (!user.getPassword().equals(password)) {
+    public User loginUser(UserLoginRequestDto dto) {
+        User user = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (!user.getPassword().equals(dto.getPassword())) {
             throw new RuntimeException("비밀번호가 틀렸습니다!");
         }
         return user;
@@ -95,13 +98,13 @@ public class UserService {
 
     // 비밀번호 수정
     @Transactional
-    public User updatePassword(Long id, String oldPassword, String newPassword) {
+    public User updatePassword(Long id, UserChangePwRequestDto dto) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        if (!user.getPassword().equals(oldPassword)) {
+        if (!user.getPassword().equals(dto.getOldPassword())) {
             throw new RuntimeException("기존 비밀번호가 아닙니다!");
         }
 
-        user.setPassword(newPassword);
+        user.setPassword(dto.getNewPassword());
         return userRepository.save(user);
     }
 
@@ -128,3 +131,4 @@ public class UserService {
         userRepository.deleteById(id);
     }
 }
+

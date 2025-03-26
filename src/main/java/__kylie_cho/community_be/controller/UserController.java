@@ -28,20 +28,13 @@ public class UserController {
         System.out.println("회원가입 요청 받음:");
         System.out.println("Email: " + requestDto.getEmail());
 
-        MultipartFile profileImage = requestDto.getProfileImage();
-        if (profileImage == null || profileImage.isEmpty()) {
+        if (requestDto.getProfileImage() == null || requestDto.getProfileImage().isEmpty()) {
             System.out.println("⚠️ 프로필 이미지 없음 (기본 이미지 사용)");
         } else {
-            System.out.println("📸 프로필 이미지 수신: " + profileImage.getOriginalFilename());
+            System.out.println("📸 프로필 이미지 수신: " + requestDto.getProfileImage().getOriginalFilename());
         }
 
-        User newUser = userService.registerUser(
-                requestDto.getEmail(),
-                requestDto.getNickname(),
-                requestDto.getPassword(),
-                requestDto.getProfileImage()
-        );
-
+        User newUser = userService.registerUser(requestDto);
         return ResponseEntity.status(201).body(newUser);
     }
 
@@ -49,10 +42,9 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody UserLoginRequestDto requestDto) {
         System.out.println("로그인 요청 받음 (email) : " + requestDto.getEmail());
-        User user = userService.loginUser(requestDto.getEmail(), requestDto.getPassword());
+        User user = userService.loginUser(requestDto);
 
         System.out.println("🔍 프로필 이미지 URL: " + user.getProfileImage());
-
         return ResponseEntity.ok(user);
     }
 
@@ -77,8 +69,8 @@ public class UserController {
 
     // 비밀번호 수정
     @PutMapping("/{id}/change-password")
-    public ResponseEntity<User> changePassword(@PathVariable Long id, @RequestBody UserChangePwRequestDto request) {
-        User updatedUser = userService.updatePassword(id, request.getOldPassword(), request.getNewPassword());
+    public ResponseEntity<User> changePassword(@PathVariable Long id, @RequestBody UserChangePwRequestDto requestDto) {
+        User updatedUser = userService.updatePassword(id, requestDto);
         return ResponseEntity.ok(updatedUser);      // 200 OK
     }
 
