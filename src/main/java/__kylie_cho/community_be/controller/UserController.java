@@ -55,12 +55,19 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    // 회원정보 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserInfo(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
+
     // 회원정보 수정
     @PutMapping("/{id}")
     public ResponseEntity<User> updatedUser(
             @PathVariable Long id,
-            @RequestParam(required = false) String nickname,
-            @RequestParam(required = false) MultipartFile profileImage) throws IOException {
+            @RequestPart(required = false) String nickname,
+            @RequestPart(required = false) MultipartFile profileImage) throws IOException {
 
         User updatedUser = userService.updateUser(id, nickname, profileImage);
 

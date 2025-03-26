@@ -64,6 +64,12 @@ public class UserService {
         return user;
     }
 
+    // 회원정보 조회
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
     // 회원정보 수정
     @Transactional
     public User updateUser(Long id, String newNickname, MultipartFile newProfileImage) throws IOException {
@@ -74,20 +80,15 @@ public class UserService {
         }
 
         // 새로운 프로필 이미지 처리
-        String imageUrl = user.getProfileImage();
         if (newProfileImage != null && !newProfileImage.isEmpty()) {
             String folderPath = "uploaded_images/";
-            Path path = Paths.get(folderPath + newProfileImage.getOriginalFilename());
+            String fileName = UUID.randomUUID().toString() + "_" + newProfileImage.getOriginalFilename();
+            Path path = Paths.get(folderPath + fileName);
             Files.createDirectories(path.getParent());
             newProfileImage.transferTo(path);
-            imageUrl = path.toString();
-        } else {
-            if (imageUrl == null || imageUrl.isEmpty()) {
-                imageUrl = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fm.blog.naver.com%2Fgambasg%2F222132751279&psig=AOvVaw0chHekwVUVVVtatmZ20ZEX&ust=1742380007472000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLiF4Mm1k4wDFQAAAAAdAAAAABAE";
-            }
-        }
 
-        user.setProfileImage(imageUrl);
+            user.setProfileImage(folderPath + fileName);
+        }
 
         return userRepository.save(user);
     }
