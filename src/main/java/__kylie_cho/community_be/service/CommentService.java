@@ -1,5 +1,6 @@
 package __kylie_cho.community_be.service;
 
+import __kylie_cho.community_be.dto.CommentDto;
 import __kylie_cho.community_be.entity.Comment;
 import __kylie_cho.community_be.entity.Post;
 import __kylie_cho.community_be.entity.User;
@@ -27,15 +28,20 @@ public class CommentService {
     }
 
     // 특정 게시글에 대한 댓글 조회
-    public List<Comment> getCommentsByPost(Long postId) {
+    public List<CommentDto> getCommentsByPost(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않아요. ID: " + postId));
-        return commentRepository.findByPost(post);
+//        return commentRepository.findByPost(post);
+
+        return commentRepository.findByPostOrderByCreatedAtDesc(post)
+                .stream()
+                .map(CommentDto::new)
+                .toList();
     }
 
     // 댓글 작성
     @Transactional
-    public Comment createComment(Long postId, Long userId, String content) {
+    public CommentDto createComment(Long postId, Long userId, String content) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post not found. ID: " + postId));
 
@@ -51,12 +57,13 @@ public class CommentService {
         post.incrementCommentCount();
         postRepository.save(post);
 
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+        return new CommentDto(savedComment);
     }
 
     // 댓글 수정
     @Transactional
-    public Comment updateComment(Long id, String newContent, Long userId) {
+    public CommentDto updateComment(Long id, String newContent, Long userId) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found. ID: " + id));
 
@@ -65,7 +72,8 @@ public class CommentService {
         }
 
         comment.setContent(newContent);
-        return commentRepository.save(comment);
+        Comment updatedComment = commentRepository.save(comment);
+        return new CommentDto(updatedComment);
     }
 
     // 댓글 삭제
