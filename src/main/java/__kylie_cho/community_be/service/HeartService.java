@@ -1,5 +1,6 @@
 package __kylie_cho.community_be.service;
 
+import __kylie_cho.community_be.dto.HeartDto;
 import __kylie_cho.community_be.entity.Heart;
 import __kylie_cho.community_be.entity.Post;
 import __kylie_cho.community_be.entity.User;
@@ -26,7 +27,7 @@ public class HeartService {
 
     // 좋아요 누르기
     @Transactional
-    public Heart addHeart(Long userId, Long postId) {
+    public HeartDto addHeart(Long userId, Long postId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         Post post = postRepository.findById(postId)
@@ -46,7 +47,8 @@ public class HeartService {
         post.incrementHeartCount();
         postRepository.save(post);
 
-        return heartRepository.save(heart);
+        Heart savedHeart = heartRepository.save(heart);
+        return new HeartDto(savedHeart);
     }
 
     // 좋아요 삭제
@@ -69,8 +71,11 @@ public class HeartService {
 
     // 특정 게시글에 대한 좋아요 수 조회
     public long countHearts(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
-        return heartRepository.countByPost(post);
+        return heartRepository.countByPostId(postId);
+    }
+
+    // 사용자가 특정 게시글을 좋아요 했는지 여부 확인
+    public boolean isHearted(Long userId, Long postId) {
+        return heartRepository.existsByUserIdAndPostId(userId, postId);
     }
 }
