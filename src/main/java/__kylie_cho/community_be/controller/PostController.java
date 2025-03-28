@@ -1,7 +1,6 @@
 package __kylie_cho.community_be.controller;
 
 import __kylie_cho.community_be.dto.PostResponseDto;
-import __kylie_cho.community_be.entity.Post;
 import __kylie_cho.community_be.service.CommentService;
 import __kylie_cho.community_be.service.HeartService;
 import __kylie_cho.community_be.service.PostService;
@@ -11,20 +10,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
 
     private final PostService postService;
-    private final CommentService commentService;
-    private final HeartService heartService;
 
     public PostController(PostService postService, CommentService commentService, HeartService heartService) {
         this.postService = postService;
-        this.commentService = commentService;
-        this.heartService = heartService;
     }
 
     // 게시글 목록 조회

@@ -25,14 +25,7 @@ public class UserController {
     public ResponseEntity<User> register(
             @ModelAttribute UserRegisterRequestDto requestDto) throws IOException {
 
-        System.out.println("회원가입 요청 받음:");
-        System.out.println("Email: " + requestDto.getEmail());
 
-        if (requestDto.getProfileImage() == null || requestDto.getProfileImage().isEmpty()) {
-            System.out.println("⚠️ 프로필 이미지 없음 (기본 이미지 사용)");
-        } else {
-            System.out.println("📸 프로필 이미지 수신: " + requestDto.getProfileImage().getOriginalFilename());
-        }
 
         User newUser = userService.registerUser(requestDto);
         return ResponseEntity.status(201).body(newUser);
@@ -41,10 +34,7 @@ public class UserController {
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody UserLoginRequestDto requestDto) {
-        System.out.println("로그인 요청 받음 (email) : " + requestDto.getEmail());
         User user = userService.loginUser(requestDto);
-
-        System.out.println("🔍 프로필 이미지 URL: " + user.getProfileImage());
         return ResponseEntity.ok(user);
     }
 
@@ -63,7 +53,6 @@ public class UserController {
             @RequestPart(required = false) MultipartFile profileImage) throws IOException {
 
         User updatedUser = userService.updateUser(id, nickname, profileImage);
-
         return ResponseEntity.ok(updatedUser);      // 200 OK
     }
 

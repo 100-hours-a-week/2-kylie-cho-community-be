@@ -3,7 +3,6 @@ package __kylie_cho.community_be.controller;
 import __kylie_cho.community_be.dto.CommentCreateRequestDto;
 import __kylie_cho.community_be.dto.CommentDto;
 import __kylie_cho.community_be.dto.CommentUpdateRequestDto;
-import __kylie_cho.community_be.entity.Comment;
 import __kylie_cho.community_be.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

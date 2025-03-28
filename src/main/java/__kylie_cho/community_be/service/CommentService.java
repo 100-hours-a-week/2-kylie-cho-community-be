@@ -31,7 +31,6 @@ public class CommentService {
     public List<CommentDto> getCommentsByPost(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않아요. ID: " + postId));
-//        return commentRepository.findByPost(post);
 
         return commentRepository.findByPostOrderByCreatedAtDesc(post)
                 .stream()

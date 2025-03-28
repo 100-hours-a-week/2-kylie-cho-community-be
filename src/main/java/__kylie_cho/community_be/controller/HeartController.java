@@ -2,7 +2,6 @@ package __kylie_cho.community_be.controller;
 
 import __kylie_cho.community_be.dto.HeartDto;
 import __kylie_cho.community_be.dto.HeartRequestDto;
-import __kylie_cho.community_be.entity.Heart;
 import __kylie_cho.community_be.service.HeartService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -140,16 +140,4 @@ public class PostService {
 
         postRepository.deleteById(id);
     }
-
-    // 조회수 증가 및 반환
-    @Transactional
-    public long incrementViewCount(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
-
-        post.increaseViewCount();
-        postRepository.save(post);
-
-        return post.getViewCount();
-    }
 }

@@ -1,7 +1,6 @@
 package __kylie_cho.community_be.dto;
 
 import __kylie_cho.community_be.entity.Post;
-import __kylie_cho.community_be.entity.User;
 import lombok.Getter;
 
 @Getter
