@@ -2,11 +2,7 @@
 
 > 카카오 부트캠프 풀스택 6차 과제 (Backend)
 
-<br/>
-
 <img src="images/logo.png" width="100" />
-
-<br/>
 
 맛추픽추의 백엔드는 **Spring Boot** 기반의 REST API 서버로,  
 
@@ -46,7 +42,7 @@
     - 게시글 좋아요수 조회
 
 ## ✅ ERD
-<img src="images/community-erd.png" width="300" />
+<img src="images/community-erd.png" width="500" />
 
 ## ✅ 프로젝트 폴더 구조
 ```
